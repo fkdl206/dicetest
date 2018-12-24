@@ -1,185 +1,121 @@
 #include <stdio.h>
-#include<stdlib.h>
+#include <stdlib.h>
 
 struct student{
-    int flag;
-    int id;
-    char name[20];
-    int kor,eng,math;
-    int sum;
-    float avg;
-    char grade;
-    int *p;
-    int i;
+int id;
+char name[20];
+int kor,eng,math;
+int sum;
+float avg;
+struct student *link;
 };
-// input_detail(&std[i]);
-void input_detail(struct student *std){
-    printf("ID : ");
-    scanf("%d",&(std->id));
-    printf("이름 : ");
-    scanf("%s",std->name);
-    printf("국어 : ");
-    scanf("%d",&std->kor);
-    printf("영어 : ");
-    scanf("%d",&std->eng);
-    printf("수학 : ");
-    scanf("%d",&std->math);
-    std->sum = std->kor + std->eng + std->math;
-    std->avg = (float)std->sum/3;
-    if(std->avg >= 90.0)        std->grade = 'A';
-    else if(std->avg >= 80.0)    std->grade = 'B';
-    else if(std->avg >= 70.0)    std->grade = 'C';
-    else if(std->avg >= 60.0)    std->grade = 'D';
-    else                    std->grade = 'F';    
-    std->flag=1;10원 갖고, 돈 갖고 오세요^^!!
-}
-p=(int *)malloc(sizeof(int)*n);
-if(p==NULL){
-printf("할당 실패\n");
-return 1;
-forif(p==NULL){
-printf("할당 실패\n");
-return 1;
 
-int input(struct student *std){
-    int i;
-    for(i=0;i<10;i++){
-        if(std[i].flag==0)break;
-    }
-    if(i==10){
-        return 1;
-    }
-    
-    input_detail(&std[i]);
-    
-    return 0;
-}
+void input(struct student **root){
+struct student *tmp;
+struct student *search;
+tmp = (struct student*)malloc(sizeof(struct student));
+printf("학번 입력 : ");
+scanf("%d",&tmp->id);
+printf("이름 입력 : ");
+//중복값 검사 함수 
+scanf("%s",tmp->name);
+printf("국어 점수 : ");
+scanf("%d",&tmp->kor);
+printf("영어 점수 : ");
+scanf("%d",&tmp->eng);
+printf("수학 점수 : ");
+scanf("%d",&tmp->math);
+tmp->sum = tmp->kor + tmp->eng + tmp->math;
+tmp->avg = (float)tmp->sum/3;
+tmp->link = NULL;
 
-void output(struct student *std){
-          int i;
-          printf("|%4s|%10s|%4s|%4s|%4s|%4s|%6s|%4s|\n",
-              "ID","이름","국어","영어","수학","합계","평균","등급");
-          for(i=0;i<10;i++){
-              if(std[i].flag==1){
-                  printf("|%4d|%10s|%4d|%4d|%4d|%4d|%6.2f|%4c|\n",
-                      std[i].id,std[i].name,std[i].kor,std[i].eng,std[i].math,
-                      std[i].sum,std[i].avg,std[i].grade);
-              }
-          }
+if(*root == NULL){
+*root = tmp;
+}else if((*root)->id > tmp->id){
+tmp->link = *root;
+*root = tmp;
+}else{
+search = *root;
+while(1){
+if(search->id == tmp->id){
+printf("중복!!! \n");
+free(tmp);
+break;
+}
+if(search->link == NULL){
+search->link = tmp;
+break;
+}
+if(search->link->id > tmp->id){
+tmp->link = search->link;
+search->link = tmp;
+break;
+}
+search = search->link;
+}
 }
 
-
-void modify(struct student *std){
-    int id;
-    int i;
-    printf("ID 입력 : ");
-    scanf("%d",&id);
-    for(i=0;i<10;i++){
-        if(std[i].id == id && std[i].flag==1){
-            break;
-        }
-    }
-    if(i==10){
-        printf("해당 ID는 없습니다.\n");
-        return ;
-    }
-    input_detail(&std[i]);
 }
 
-void del(struct student *std){
-                int id;
-                int i;
-                printf("ID 입력 : ");
-                scanf("%d",&id);
-                for(i=0;i<10;i++){
-                    if(std[i].id == id && std[i].flag==1){
-                        break;
-                    }
-                }
-                if(i==10){
-                    printf("해당 ID는 없습니다.\n");
-                    return ;
-                }
-                std[i].flag=0;
+void output(struct student *root){
+printf("|%4s|%10s|%4s|%4s|%4s|%4s|%6s|\n",
+"ID","이름","국어","영어","수학","합계","평균");
+while(root){
+printf("|%4d|%10s|%4d|%4d|%4d|%4d|%6.2f|\n",
+root->id,root->name,root->kor,root->eng,root->math,
+root->sum,root->avg);
+root = root->link;
+}
 }
 
-void save(struct student *std){
-    FILE * f;
-    int i;
-    f = fopen("c:\\test.txt","w");
-    for(i=0;i<10;i++){
-        if(std[i].flag == 1){
-            fprintf(f,"%d %d %s %d %d %d %d %f %c\n",
-                std[i].flag,std[i].id,std[i].name,std[i].kor,std[i].eng,
-                std[i].math,std[i].sum,std[i].avg,std[i].grade);
-        }else{
-            fprintf(f,"%d\n",std[i].flag);
-        }
-    }
-    fclose(f);
+void exit_func(struct student *root){
+struct student * dummy;
+while(root){
+dummy = root;
+root = root->link;
+free(dummy);
 }
-
-void load(struct student *std){
-    FILE * f;
-    int i;
-    f = fopen("c:\\test.txt","r");
-    if(f == NULL)return ;
-    for(i=0;i<10;i++){
-        fscanf(f,"%d",&std[i].flag);
-        if(std[i].flag == 1){
-            fscanf(f,"%d %s %d %d %d %d %f %c\n",
-                &std[i].id,std[i].name,&std[i].kor,&std[i].eng,
-                &std[i].math,&std[i].sum,&std[i].avg,&std[i].grade);
-        }
-    }
-    fclose(f);
 }
 
 int main(){
-    struct student std[10];
-    int sel;
-    int i;
-    for(i=0;i<10;i++){
-        std[i].flag=0;
-    }
-    
-    while(1){
-        printf("학생 성적관리 프로그램 \n");
-        printf("1. 입력\n");
-        printf("2. 출력\n");
-        printf("3. 수정\n");
-        printf("4. 삭제\n");
-        printf("5. save\n");
-        printf("6. load\n");
-        printf("0. 종료\n");
-        printf("> ");
-        scanf("%d",&sel);
-        switch(sel){
-        case 1:
-            if(input(std)){
-                printf("문제가 발생하여 입력을 종료합니다. \n");
-            }
-            break;
-        case 2:
-            output(std);
-            break;
-        case 3:
-            modify(std);
-            break;
-        case 4:
-            del(std);
-            break;
-        case 5:
-            save(std);
-            break;
-        case 6:
-            load(std);
-            break;
-        case 0:
-            printf("프로그램을 종료합니다.\n");
-            exit(0);
-            break;
-        }
-    }    
-    return 0;
+struct student *root = NULL;
+int sel;
+
+while(1){
+printf("학생 성적관리 프로그램 \n");
+printf("1. 입력\n");
+printf("2. 출력\n");
+printf("3. 수정\n");
+printf("4. 삭제\n");
+printf("5. save\n");
+printf("6. load\n");
+printf("0. 종료\n");
+printf("> ");
+scanf("%d",&sel);
+switch(sel){
+case 1:
+input(&root);
+break;
+case 2:
+output(root);
+break;
+case 3:
+break;
+case 4:
+break;
+case 5:
+break;
+case 6:
+
+break;
+case 0:
+printf("프로그램을 종료합니다.\n");
+exit_func(root);
+exit(0);
+break;
+}
+}
+
+
+return 0;
 }
