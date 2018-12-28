@@ -13,7 +13,7 @@ typedef struct student{
 }student;
 
 int main(){
-    student stud[1000];
+    student stud[1000];      // student stud[4];
     int i=0,j;
     int middle1_sum=0;
     int middle2_sum=0;
